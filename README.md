@@ -25,10 +25,16 @@ npm install
 3. Set up environment variables:
 
 Option 1: Using .env file (Recommended)
-- Create a `.env` file in the root directory:
-```env
-ADMIN_PASSWORD=your_secure_password
+- Copy the .env.example file to create a new .env file:
+```bash
+cp .env.example .env
 ```
+- Open the .env file and replace `YourSecurePassword123!` with your desired admin password
+- Make sure your password:
+  - Is at least 8 characters long
+  - Contains uppercase and lowercase letters
+  - Contains numbers
+  - Contains special characters
 
 Option 2: Using VS Code Launch Configuration
 - Open `.vscode/launch.json`
