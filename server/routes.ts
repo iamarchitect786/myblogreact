@@ -34,7 +34,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json(result.error);
       }
 
-      const post = await storage.createPost(result.data, req.user!.id);
+      const user = req.user;
+      if (!user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const post = await storage.createPost(result.data, user.id);
       res.status(201).json(post);
     } catch (error) {
       res.status(500).json({ message: "Failed to create post" });
@@ -45,7 +50,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const post = await storage.getPost(parseInt(req.params.id));
       if (!post) return res.status(404).json({ message: "Post not found" });
-      if (post.authorId !== req.user!.id) return res.status(403).json({ message: "Not authorized" });
+
+      const user = req.user;
+      if (!user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      if (post.authorId !== user.id) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
 
       const result = insertPostSchema.partial().safeParse(req.body);
       if (!result.success) {
@@ -63,7 +76,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const post = await storage.getPost(parseInt(req.params.id));
       if (!post) return res.status(404).json({ message: "Post not found" });
-      if (post.authorId !== req.user!.id) return res.status(403).json({ message: "Not authorized" });
+
+      const user = req.user;
+      if (!user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      if (post.authorId !== user.id) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
 
       await storage.deletePost(post.id);
       res.status(204).send();
