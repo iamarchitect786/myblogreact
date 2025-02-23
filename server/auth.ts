@@ -28,7 +28,28 @@ async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
-export function setupAuth(app: Express) {
+// Middleware to check if user is admin
+export function requireAdmin(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
+  if (!req.isAuthenticated() || !req.user.isAdmin) {
+    return res.sendStatus(403);
+  }
+  next();
+}
+
+export async function setupAuth(app: Express) {
+  // Create initial admin user if none exists
+  const adminUser = await storage.getUserByUsername("admin");
+  if (!adminUser) {
+    if (!process.env.ADMIN_PASSWORD) {
+      throw new Error("ADMIN_PASSWORD environment variable must be set");
+    }
+    await storage.createUser({
+      username: "admin",
+      password: await hashPassword(process.env.ADMIN_PASSWORD),
+      isAdmin: true
+    });
+  }
+
   const sessionSettings: session.SessionOptions = {
     secret: "your-secret-key", // In production, use environment variable
     resave: false,
@@ -58,24 +79,15 @@ export function setupAuth(app: Express) {
     done(null, user);
   });
 
-  app.post("/api/register", async (req, res, next) => {
-    const existingUser = await storage.getUserByUsername(req.body.username);
-    if (existingUser) {
-      return res.status(400).send("Username already exists");
-    }
-
-    const user = await storage.createUser({
-      ...req.body,
-      password: await hashPassword(req.body.password),
-    });
-
-    req.login(user, (err) => {
-      if (err) return next(err);
-      res.status(201).json(user);
-    });
-  });
-
+  // Only allow admin login, no registration endpoint
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
+    if (!req.user.isAdmin) {
+      req.logout((err) => {
+        if (err) console.error(err);
+        res.status(403).send("Only admin users can log in");
+      });
+      return;
+    }
     res.status(200).json(req.user);
   });
 
