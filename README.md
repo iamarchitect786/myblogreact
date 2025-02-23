@@ -41,7 +41,7 @@ ADMIN_PASSWORD=your_secure_password
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/myblogreact.git
+git clone https://github.com/iamarchitect786/myblogreact.git
 cd myblogreact
 ```
 
