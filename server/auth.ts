@@ -30,7 +30,7 @@ async function comparePasswords(supplied: string, stored: string) {
 
 // Middleware to check if user is admin
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  if (!req.isAuthenticated() || !req.user?.isAdmin) {
+  if (!req.isAuthenticated() || !req.user || !req.user.isAdmin) {
     return res.status(403).json({ message: "Forbidden" });
   }
   next();
@@ -93,14 +93,15 @@ export async function setupAuth(app: Express) {
 
   // Only allow admin login, no registration endpoint
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    if (!req.user?.isAdmin) {
+    const user = req.user;
+    if (!user || !user.isAdmin) {
       req.logout((err) => {
         if (err) console.error(err);
         res.status(403).json({ message: "Only admin users can log in" });
       });
       return;
     }
-    res.status(200).json(req.user);
+    res.status(200).json(user);
   });
 
   app.post("/api/logout", (req, res, next) => {
