@@ -7,6 +7,7 @@ A modern blog platform built with React and Express, featuring a single-admin ar
 - Node.js version 16 or later
 - Git
 - npm (comes with Node.js)
+- VS Code (recommended)
 
 ## Local Development Setup
 
@@ -27,12 +28,43 @@ Create a `.env` file in the root directory with:
 ADMIN_PASSWORD=your_secure_password
 ```
 
-4. Start the development server:
+4. Running in VS Code:
+- Open the project folder in VS Code
+- Install recommended extensions (optional but recommended):
+  - ESLint
+  - Prettier
+  - TypeScript and JavaScript Language Features
+- Open integrated terminal (Ctrl+` or Cmd+`)
+- Start the development server:
 ```bash
 npm run dev
 ```
 
 The application will be available at `http://localhost:5000`
+
+### VS Code Debugging
+
+To debug the application in VS Code:
+
+1. Create a `.vscode/launch.json` file:
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Server",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/node_modules/tsx/dist/cli.mjs",
+      "args": ["server/index.ts"],
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+    }
+  ]
+}
+```
+
+2. Press F5 or use the Debug menu to start debugging
 
 ## Production Deployment
 
@@ -84,11 +116,28 @@ The application will be available on port 5000 by default.
 
 ## Troubleshooting
 
-If you encounter a SyntaxError when starting the application:
-1. Ensure you have Node.js version 16 or later installed
-2. Delete the `node_modules` folder and package-lock.json
-3. Run `npm install` again
-4. Start the development server with `npm run dev`
+If you encounter errors when running in VS Code:
+
+1. Ensure you have Node.js version 16 or later installed:
+```bash
+node --version
+```
+
+2. If you see a SyntaxError:
+- Delete the `node_modules` folder and package-lock.json
+- Run `npm install` again
+- Start the development server with `npm run dev`
+
+3. Port already in use:
+- Kill the process using port 5000:
+  - Windows: `netstat -ano | findstr :5000`
+  - Mac/Linux: `lsof -i :5000`
+- Or change the port in server/index.ts
+
+4. TypeScript errors:
+- Run `npm run check` to verify types
+- Ensure VS Code is using the workspace version of TypeScript
+  (Select TypeScript version in the bottom right when a .ts file is open)
 
 ## License
 
