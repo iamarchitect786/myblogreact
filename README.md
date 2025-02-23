@@ -23,9 +23,34 @@ npm install
 ```
 
 3. Set up environment variables:
-Create a `.env` file in the root directory with:
+
+Option 1: Using .env file (Recommended)
+- Create a `.env` file in the root directory:
 ```env
 ADMIN_PASSWORD=your_secure_password
+```
+
+Option 2: Using VS Code Launch Configuration
+- Open `.vscode/launch.json`
+- Add environment variables to the configuration:
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Server",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/node_modules/tsx/dist/cli.mjs",
+      "args": ["server/index.ts"],
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "env": {
+        "ADMIN_PASSWORD": "your_secure_password"
+      }
+    }
+  ]
+}
 ```
 
 4. Running in VS Code:
@@ -46,23 +71,6 @@ The application will be available at `http://localhost:5000`
 
 To debug the application in VS Code:
 
-1. Create a `.vscode/launch.json` file:
-```json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Server",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/node_modules/tsx/dist/cli.mjs",
-      "args": ["server/index.ts"],
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
-    }
-  ]
-}
-```
 
 2. Press F5 or use the Debug menu to start debugging
 
